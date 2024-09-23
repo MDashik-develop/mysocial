@@ -47,7 +47,10 @@ a div img{
            <a href="profile.php?username=<?php echo $friend_show['username']; ?>">
             
             <div style="" class="img">
-               <img style="" src="<?php echo $friend_show['dp']; ?>" alt="<?php echo $friend_show['name']; ?>">
+               <img style="" src="<?php 
+                    $profile_image_path = !empty($friend_show['dp']) ? $friend_show['dp'] : 'default-profile.png';
+                    echo $profile_image_path;
+                    ?>">
             </div>
             <br>
             <div class="ditails">
