@@ -272,6 +272,8 @@ strong {
             // time ago mesthod 
      
                 date_default_timezone_set('Asia/Dhaka');  
+                // Display the current date and time
+                $c_tm = date('Y-m-d H:i:s');
 
                 function time_ago($time)
                     {
@@ -344,7 +346,9 @@ strong {
 
                 <div class="details">
                     <div class="dp-img-div">
-                        <a href="profile.php?username=<?php echo $post_user_name; ?>"><img style="max-height: 100%; min-height: 100%; max-width: 100%; min-width: 100%;  transform: scale(1.3);" src="<?php echo $post_user_row['dp'];?>"></a>
+                        <a href="profile.php?username=<?php echo $post_user_name; ?>"><img style="max-height: 100%; min-height: 100%; max-width: 100%; min-width: 100%;  transform: scale(1.3);" src="<?php    
+                    $profile_image_path = !empty($post_user_row['dp']) ? $post_user_row['dp'] : 'default-profile.png';
+                    echo $profile_image_path;?>"></a>
                     </div>
                     <div class="post-details" style="float: left;">
                         <a href="profile.php?username=<?php echo $post_user_row['username']; ?>"><h4><?php echo $post_user_row['name']; ?></h4></a>
@@ -422,52 +426,54 @@ strong {
                     </ul>
                     <ul>
 
-      <div class="comments-section">
-                                    <?php
-                                    // Fetch comments for the post
-                                    $cmnt_sql = "SELECT * FROM post_comment WHERE post_id='$post_id' ORDER BY id DESC LIMIT 2";
-                                    $cmnt_query = mysqli_query($con, $cmnt_sql);
-
-                                    $cmnt_row = mysqli_fetch_array($cmnt_query);
-                                        $tm = $cmnt_row['comment_time'];
-                                        $cmnd_time = $tm;
 
 
-                                        $comment_username = $cmnt_row['comment_username'];
 
-                                        // Fetch user details for the comment
-                                        $cmnt_user_sql = "SELECT * FROM user WHERE username='$comment_username'";
-                                        $cmnt_user_query = mysqli_query($con, $cmnt_user_sql);
-                                        $cmnt_user_row = mysqli_fetch_array($cmnt_user_query);
+<div class="comments-section">
+    <?php
+    // Fetch comments for the post section //
+    $cmnt_sql = "SELECT * FROM post_comment WHERE post_id='$post_id' ORDER BY id DESC LIMIT 2";
+    $cmnt_query = mysqli_query($con, $cmnt_sql);
 
-                                        if($cmnt_query == 1){
+    // Check if there are comments
+    if (mysqli_num_rows($cmnt_query) > 0) {
+        while ($cmnt_row = mysqli_fetch_array($cmnt_query)) {
+            $comment_username = $cmnt_row['comment_username'];
 
-                                    ?>
-        <div class="comment">
-            <div class="comment-img">
-                <a href="profile.php?username=<?php echo $post_user_row['username']; ?>"><img src="<?php echo $cmnt_user_row['dp']; ?>" ></a>
+            // Fetch user details for the comment
+            $cmnt_user_sql = "SELECT * FROM user WHERE username='$comment_username'";
+            $cmnt_user_query = mysqli_query($con, $cmnt_user_sql);
+            $cmnt_user_row = mysqli_fetch_array($cmnt_user_query);
+
+            // Display comment
+            ?>
+            <div class="comment">
+                <div class="comment-img">
+                    <a href="profile.php?username=<?php echo $cmnt_user_row['username']; ?>">
+                        <img src="<?php echo $cmnt_user_row['dp']; ?>" alt="Profile Picture">
+                    </a>
+                </div>
+                <div class="comment-details">
+                    <p class="comment-username">
+                        <strong><?php echo $cmnt_user_row['name']; ?></strong>
+                        <?php
+                        // Display comment time (you can use your time_ago function here if needed)
+                        $tm = $cmnt_row['cmnd_time'];
+                        echo time_ago($tm); 
+                        ?>
+                    </p>
+                    <p class="comment-text"><?php echo $cmnt_row['commentt']; ?></p>
+                </div>
             </div>
-            <div class="comment-details">
-                <p class="comment-username"><strong><?php echo $cmnt_user_row['name']; ?></strong><?php 
-                                        $tm = $cmnt_row['comment_time'];
-                                        $cmnd_time = $tm;
-                //echo time_ago($cmnd_time); ?></p>
-                
-                <p class="comment-text"><?php echo $cmnt_row['commentt']; ?></p>
-            </div>
-        </div>
+            <?php
+        }
+    } else {
+        // If there are no comments, you might want to display a message or leave this section empty
+        echo "<p>No comments yet.</p>";
+    }
+    ?>
 </div>
-<?php 
-                                        }else{
-?>
-<style>
-.comment{
-    display: none;
-}
-</style>
-<?php
-                                        }
-?>
+
 
              
                     </ul>
@@ -516,7 +522,7 @@ if (isset($_POST['post_comment'])) {
     $pst_id = $_POST['post_id'];
 
     // Insert the comment into the database
-    $update_queryy = "INSERT INTO post_comment (post_id, commentt, comment_username, ammount) VALUES ('$pst_id', '$cmnt', '$my_unm', 1)";
+    $update_queryy = "INSERT INTO post_comment (post_id, commentt, comment_username, ammount, cmnd_time) VALUES ('$pst_id', '$cmnt', '$my_unm', 1,'$c_tm')";
 
     $resultt = mysqli_query($con, $update_queryy);
     if ($resultt) {
