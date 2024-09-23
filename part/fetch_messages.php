@@ -6,11 +6,53 @@ include("config/db.php");
 $conversation_id = intval($_GET['conversation_id']);
 
 // Query to get messages along with sender_id
-$sql = "SELECT * FROM messages WHERE conversation_id = $conversation_id ORDER BY timestamp ASC";
+$sql = "SELECT * FROM messages WHERE conversation_id = $conversation_id ORDER BY msg_time ASC";
 $result = mysqli_query($con, $sql);
 
+
+
+            // time ago mesthod 
+     
+                date_default_timezone_set('Asia/Dhaka');  
+                // Display the current date and time
+                $c_tm = date('Y-m-d H:i:s');
+
+                function time_ago($time)
+                    {
+                    $time_difference = time() - strtotime($time);
+                    $seconds = $time_difference;
+                    $minutes = round($seconds / 60);
+                    $hours = round($seconds / 3600);
+                    $days = round($seconds / 86400);
+                    $weeks = round($seconds / 604800);
+                    $months = round($seconds / 2629440);
+                    $years = round($seconds / 31553280);
+                
+                    if ($seconds <= 60) {
+                        return "$seconds seconds ago";
+                    } elseif ($minutes <= 60) {
+                        return "$minutes minutes ago";
+                    } elseif ($hours <= 24) {
+                        return "$hours hours ago";
+                    } elseif ($days <= 7) {
+                        return "$days days ago";
+                    } elseif ($weeks <= 4.3) { // 4.3 == 30/7
+                        return "$weeks weeks ago";
+                    } elseif ($months <= 12) {
+                        return "$months months ago";
+                    } else {
+                        return "$years years ago";
+                    }
+                }
+
 while ($row = mysqli_fetch_assoc($result)) {
-    $timestamp = date('h:i A', strtotime($row['timestamp']));
+
+                // time ago action 
+            $tim = $row['msg_time'];
+            $post_time = $tim; // Post creation time
+
+
+    $msg_time = date('Y-m-d H:i:s', strtotime($row['msg_time']));
     $message_class = ($row['sender_id'] == $my_id) ? 'sender' : 'receiver';
 
     // Fetch conversation details to determine sender and receiver
@@ -48,7 +90,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <div class='name'>{$name}</div>
                     <div class='message-text'>
                         {$row['message']}
-                        <span class='timestamp'>{$timestamp}</span>
+                        <span class='timestamp'>time_ago($msg_time)</span>
                     </div>
                 </div>
             </div>
