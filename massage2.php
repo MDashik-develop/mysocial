@@ -136,6 +136,9 @@ $receiver_name = $row1['name']; // Fetch receiver's name dynamically if availabl
 <body>
 <?php include ("part/headar.php");?>
 
+<!--<h2> <?php date_default_timezone_set('Asia/Dhaka');
+ echo date('Y-m-d H:i:s');  ?></h2>-->
+
     <div class="chat-container">
         <div class="chat-header">
             <h2>Chat with <?php echo $receiver_name; ?></h2>
@@ -153,6 +156,7 @@ $receiver_name = $row1['name']; // Fetch receiver's name dynamically if availabl
     <script>
         $(document).ready(function() {
     var conversationId = <?php echo $conversation_id; ?>; // Set conversationId from PHP
+    var recId = <?php echo $rcv_id; ?>; // Set reciver id from PHP
 
     function loadMessages() {
         var chatBody = $('#chat-body');
@@ -189,7 +193,8 @@ $receiver_name = $row1['name']; // Fetch receiver's name dynamically if availabl
                 method: 'POST',
                 data: {
                     conversation_id: conversationId,
-                    message: message
+                    message: message,
+                    rec_id: recId
                 },
                 success: function() {
                     $('#message-input').val('');
